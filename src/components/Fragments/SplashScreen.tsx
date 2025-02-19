@@ -16,7 +16,7 @@ export default function SplashScreen() {
       className={`flex w-full min-h-screen justify-center items-center bg-gradient-to-br from-sky-400 to-indigo-700`}
     >
       <h1 className="md:text-5xl text-2xl font-bold text-white">
-        Welcome to MyBlog
+        Welcome to Dashboard Blog
       </h1>
     </main>
   );

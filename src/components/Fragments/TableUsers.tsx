@@ -1,76 +1,153 @@
 import React, { useState } from "react";
-import { Button, Flex, Table } from "antd";
-import type { TableColumnsType, TableProps } from "antd";
-
-type TableRowSelection<T extends object = object> =
-  TableProps<T>["rowSelection"];
-
-interface DataType {
-  key: React.Key;
-  name: string;
-  age: number;
-  address: string;
-}
-
-const columns: TableColumnsType<DataType> = [
-  { title: "Name", dataIndex: "name" },
-  { title: "Age", dataIndex: "age" },
-  { title: "Address", dataIndex: "address" },
-];
-
-const dataSource = Array.from<DataType>({ length: 46 }).map<DataType>(
-  (_, i) => ({
-    key: i,
-    name: `Edward King ${i}`,
-    age: 32,
-    address: `London, Park Lane no. ${i}`,
-  })
-);
+import { Button, message, Table } from "antd";
+import {
+  keepPreviousData,
+  useQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import axios from "axios";
+import { baseURL, instance } from "@/modules";
+import { Blog, User } from "@/type";
+import { useRouter } from "next/router";
+import { Loading } from "../Elements/Loading";
+import ModalConfirm from "../Elements/ModalConfirm";
 
 const TableUsers = () => {
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [messageApi, contextHolder] = message.useMessage();
+  const queryClient = useQueryClient();
+  const router = useRouter();
 
-  const start = () => {
-    setLoading(true);
-    // ajax request after empty completing
-    setTimeout(() => {
-      setSelectedRowKeys([]);
-      setLoading(false);
-    }, 1000);
+  // Fetch data posts
+  const { isLoading, error, data } = useQuery({
+    queryKey: ["users", page],
+    queryFn: async () => {
+      const response = await axios.get(`${baseURL}/users`, {
+        params: { page: page, per_page: pageSize },
+      });
+      return response.data;
+    },
+    placeholderData: keepPreviousData,
+  });
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await instance.delete(`${baseURL}/users/${id}`);
+    },
+    onSuccess: () => {
+      message.success("User deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["users"] }); // Refresh data
+      setIsModalOpen(false);
+    },
+    onError: (error: any) => {
+      message.error(error.message || "Failed to delete User");
+    },
+  });
+
+  // Handle delete confirmation
+  const handleDelete = () => {
+    if (selectedUserId !== null) {
+      deleteMutation.mutate(selectedUserId);
+    }
   };
 
-  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
+  const dataTable = data?.map((item: User) => ({
+    key: item.id,
+    id: item.id,
+    name: item.name,
+    email: item.email,
+    gender: item.gender,
+    status: item.status,
+    action: (
+      <div className="flex gap-2 items-center flex-col md:flex-row">
+        {/* <Button
+          onClick={() => router.push(`/blogs/detail/${item.id}`)}
+          size="small"
+          color="primary"
+          variant="outlined"
+        >
+          Detail
+        </Button>
+        <Button
+          size="small"
+          color="green"
+          variant="outlined"
+          onClick={() => router.push(`/blogs/update/${item.id}`)}
+        >
+          Update
+        </Button> */}
+        <Button
+          color="danger"
+          variant="outlined"
+          size="small"
+          onClick={() => {
+            setSelectedUserId(item.id);
+            setIsModalOpen(true);
+          }}
+        >
+          Delete
+        </Button>
+      </div>
+    ),
+  }));
 
-  const rowSelection: TableRowSelection<DataType> = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  };
-
-  const hasSelected = selectedRowKeys.length > 0;
+  if (isLoading) return <Loading />;
+  if (error) {
+    messageApi.open({
+      type: "error",
+      content: error.message || "An error occurred",
+    });
+    return contextHolder;
+  }
 
   return (
-    <Flex gap="middle" vertical>
-      <Flex align="center" gap="middle">
-        <Button
-          type="primary"
-          onClick={start}
-          disabled={!hasSelected}
-          loading={loading}
-        >
-          Reload
-        </Button>
-        {hasSelected ? `Selected ${selectedRowKeys.length} items` : null}
-      </Flex>
-      <Table<DataType>
-        rowSelection={rowSelection}
-        columns={columns}
-        dataSource={dataSource}
+    <>
+      {contextHolder}
+      <ModalConfirm
+        title="Delete User"
+        isModalOpen={isModalOpen}
+        onConfirm={handleDelete}
+        setIsModalOpen={setIsModalOpen}
+      >
+        <p>Are you sure you want to delete this user?</p>
+      </ModalConfirm>
+
+      {/* <Button
+        style={{ marginBottom: "1rem" }}
+        onClick={() => router.push("/blogs/create")}
+        type="primary"
+      >
+        Create User
+      </Button> */}
+      <Table<Blog>
+        style={{ overflowX: "auto" }}
+        columns={[
+          { title: "ID", dataIndex: "id" },
+          { title: "Name", dataIndex: "name" },
+          { title: "Email", dataIndex: "email" },
+          { title: "Gender", dataIndex: "gender" },
+          { title: "Status", dataIndex: "status" },
+          { title: "Action", dataIndex: "action" },
+        ]}
+        dataSource={dataTable}
+        pagination={{
+          current: page,
+          pageSize: pageSize,
+          total: 2000,
+          showSizeChanger: true,
+          pageSizeOptions: ["5", "10"],
+          onChange: (newPage, newPageSize) => {
+            setPage(newPage);
+            setPageSize(newPageSize);
+          },
+        }}
       />
-    </Flex>
+    </>
   );
 };
 

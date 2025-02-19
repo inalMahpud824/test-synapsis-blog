@@ -34,17 +34,8 @@ const DashboardLayout = ({
   } = theme.useToken();
 
   return (
-    <Layout className="min-h-screen">
-      <Sider
-        breakpoint="lg"
-        collapsedWidth="0"
-        onBreakpoint={(broken) => {
-          console.log(broken);
-        }}
-        onCollapse={(collapsed, type) => {
-          console.log(collapsed, type);
-        }}
-      >
+    <Layout>
+      <Sider breakpoint="lg" collapsedWidth="0">
         {/* <div className="demo-logo-vertical" /> */}
         <h1 className="text-white flex items-center justify-center my-6 md:text-2xl font-bold ">
           Dashboard Blog
@@ -57,21 +48,20 @@ const DashboardLayout = ({
           items={items}
         />
       </Sider>
-      <Layout>
+      <div className="w-full min-h-screen max-h-screen overflow-y-auto bg-[#F5F5F5] ">
         <Header style={{ padding: 0, background: colorBgContainer }} />
-        <Content style={{ margin: "24px 16px 0" }}>
+        <div className="py-4 px-7">
           <div
             style={{
               padding: 24,
-              minHeight: 360,
               background: colorBgContainer,
               borderRadius: borderRadiusLG,
             }}
           >
             {children}
           </div>
-        </Content>
-      </Layout>
+        </div>
+      </div>
     </Layout>
   );
 };
