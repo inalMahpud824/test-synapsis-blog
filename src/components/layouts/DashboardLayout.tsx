@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { UserOutlined, FileTextOutlined } from "@ant-design/icons";
 import { Layout, Menu, theme } from "antd";
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Sider } = Layout;
 
 const items = [
   {
@@ -32,12 +32,13 @@ const DashboardLayout = ({
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+  const [collapse, setCollapse] = useState(false);
 
   return (
-    <Layout>
-      <Sider breakpoint="lg" collapsedWidth="0">
+    <Layout >
+      <Sider breakpoint="lg" collapsedWidth="0" onCollapse={() => setCollapse(!collapse)}>
         {/* <div className="demo-logo-vertical" /> */}
-        <h1 className="text-white flex items-center justify-center my-6 md:text-2xl font-bold ">
+        <h1 className={`text-white flex items-center justify-center my-6 md:text-2xl font-bold ${collapse ? "hidden" : ""}`}>
           Dashboard Blog
         </h1>
         <Menu

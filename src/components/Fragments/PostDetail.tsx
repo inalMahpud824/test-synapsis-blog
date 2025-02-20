@@ -1,26 +1,36 @@
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { baseURL } from "@/modules";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { baseURL, instance } from "@/modules";
 import { Comment } from "@/type";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import { Loading } from "../Elements/Loading";
+import { message } from "antd";
+import { useState } from "react";
+import CommentForm from "./CommentForm";
 
 export default function PostDetail({ id }: { id: string }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const [messageApi, contextHolder] = message.useMessage();
+  const [inputData, setInputData] = useState({
+    post_id: id,
+    name: "",
+    email: "",
+    body: "",
+  });
   const { data, isLoading, error } = useQuery({
     queryKey: ["postDetail", id],
     enabled: !!id,
     queryFn: async () => {
       const [postResponse, commentResponse] = await Promise.all([
-        axios.get(`${baseURL}/posts/${id}`),
-        axios.get(`${baseURL}/posts/${id}/comments`),
+        instance.get(`${baseURL}/posts/${id}`),
+        instance.get(`${baseURL}/posts/${id}/comments`),
       ]);
       let userResponse = null;
 
       try {
         if (postResponse.data.user_id) {
-          userResponse = await axios.get(
+          userResponse = await instance.get(
             `${baseURL}/users/${postResponse.data.user_id}`
           );
         }
@@ -35,11 +45,25 @@ export default function PostDetail({ id }: { id: string }) {
     },
   });
 
+  const postCommentMutation = useMutation({
+    mutationFn: async () => {
+       await instance.post(`${baseURL}/comments/`, inputData);
+    },
+    onSuccess: () => {
+      messageApi.success("Comment successfully");
+      queryClient.invalidateQueries({ queryKey: ["postDetail"] });
+    },
+    onError: (error: any) => {
+      messageApi.error(error.message || "Failed to comment");
+    },
+  });
+
   if (isLoading) return <Loading />;
   if (error) return <p>Error fetching post details.</p>;
 
   return (
     <div>
+      {contextHolder}
       <div
         className="flex items-center gap-2 hover:font-bold cursor-pointer"
         onClick={() => router.push("/blogs")}
@@ -59,7 +83,6 @@ export default function PostDetail({ id }: { id: string }) {
         <h3 className="text-sm italic pb-2 -pt-1">Created by: Anonymous</h3>
       )}
       <p className="">{data?.post.body}</p>
-
       <h2 className="text-lg font-bold py-2">Comment</h2>
       {data?.comments.length > 0 ? (
         data?.comments.map((comment: Comment, index: number) => (
@@ -69,8 +92,15 @@ export default function PostDetail({ id }: { id: string }) {
           </div>
         ))
       ) : (
-        <p>No comments</p>
+        <p className="pb-4">No comments</p>
       )}
+      <CommentForm
+        postCommentMutation={postCommentMutation}
+        inputData={inputData}
+        setInputData={setInputData}
+      />
     </div>
   );
 }
+
+

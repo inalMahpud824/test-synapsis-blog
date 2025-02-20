@@ -136,8 +136,8 @@ export default function UpdatePost() {
                 </Select.Option>
               )}
               {data &&
-                data?.users?.map((item: any) => (
-                  <Select.Option key={item.id} value={item.id}>
+                data?.users?.map((item: any, index: number) => (
+                  <Select.Option key={index} value={item.id}>
                     {item.name}
                   </Select.Option>
                 ))}

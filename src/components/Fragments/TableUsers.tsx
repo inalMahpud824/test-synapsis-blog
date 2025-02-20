@@ -6,7 +6,6 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import axios from "axios";
 import { baseURL, instance } from "@/modules";
 import { Blog, User } from "@/type";
 import { useRouter } from "next/router";
@@ -26,7 +25,7 @@ const TableUsers = () => {
   const { isLoading, error, data } = useQuery({
     queryKey: ["users", page],
     queryFn: async () => {
-      const response = await axios.get(`${baseURL}/users`, {
+      const response = await instance.get(`${baseURL}/users`, {
         params: { page: page, per_page: pageSize },
       });
       return response.data;
