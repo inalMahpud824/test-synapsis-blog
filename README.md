@@ -1,40 +1,74 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Test Synapsis Blog
 
-## Getting Started
+This is a blog application built as part of a frontend developer test for Synapsis. The project focuses on implementing a blog system with CRUD functionality, pagination, and a responsive user interface using Next.js and TypeScript.
 
-First, run the development server:
+## 🚀 Live Demo
+[View the deployed app](https://test-synapsis-blog.vercel.app/)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 📌 Features
+- Create, Read, Update, and Delete (CRUD) blog posts
+- Pagination to display blog posts efficiently
+- Responsive design using Tailwind CSS and Ant Design
+- Optimized API calls with Axios and TanStack Query
+- No page refresh when performing CRUD actions
+
+## 🛠️ Tech Stack
+- **Framework:** Next.js 13 (Page Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS (v3) & Ant Design (v5)
+- **API Handling:** Axios & TanStack Query (v5)
+- **Data Source:** [GoRest API](https://gorest.co.in/)
+- **Deployment:** Vercel
+
+## 🏗️ Installation & Setup
+To run this project locally, follow these steps:
+
+### 1. Clone the Repository
+```sh
+git clone https://github.com/inalMahpud824/test-synapsis-blog.git
+cd test-synapsis-blog
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install Dependencies
+```sh
+npm install
+```
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+### 3. Run the Development Server
+```sh
+npm run dev
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+The app should now be running at `http://localhost:3000/`.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## 🔥 Optimization Considerations
+- **Server Side Rendering (SSR):** Used to optimize performance and SEO.
+- **Error Handling:** Ensured proper error handling for API calls.
+- **Performance Improvements:** Avoid unnecessary re-renders and optimize API calls.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## 📂 Project Structure
+```
+📦 test-synapsis-blog
+├── 📂 components   # Reusable UI components
+├── 📂 layouts      # Layout components (Dashboard, etc.)
+├── 📂 modules      # API configurations and utilities
+├── 📂 pages        # Page-based routing (Next.js)
+├── 📂 styles       # Global styles
+├── 📂 type         # TypeScript definitions for data structures
+└── 📜 README.md    # Project documentation
+```
 
-## Learn More
+## 📝 Future Improvements
+- Implement comment system with CRUD functionality
+- Improve SEO optimizations further
+- Enhance UI/UX with animations and loading indicators
 
-To learn more about Next.js, take a look at the following resources:
+## 🤝 Contributing
+If you find any issues or have suggestions, feel free to open an issue or submit a pull request!
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📄 License
+This project is for educational/testing purposes only.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+---
+Made with ❤️ by [inalMahpud824](https://github.com/inalMahpud824)
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
